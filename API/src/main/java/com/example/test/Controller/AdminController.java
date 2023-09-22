@@ -1,12 +1,14 @@
 package com.example.test.Controller;
 
 import com.example.test.DTO.HttpRex;
+import com.example.test.DTO.JWTForm;
 import com.example.test.DTO.LoginForm;
 import com.example.test.DTO.NewUserForm;
 import com.example.test.Exception.HttpEx;
 import com.example.test.Model.User;
 import com.example.test.Security.JwtTokenProvider;
 import com.example.test.Service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,19 +32,20 @@ public class AdminController
     AuthService authService;
 
     @PostMapping("login")
-    private ResponseEntity<HttpRex> login(@RequestBody LoginForm body)
+    private ResponseEntity<HttpRex> login(@Valid@RequestBody LoginForm body)
     {
-        final String token = authService.loginUser(body.userName(), body.password());
-        HttpRex rex = new HttpRex("200", Collections.singletonMap("access_token",token));
+        final JWTForm tokenData = authService.loginUser(body.userName(), body.password());
+        HttpRex rex = new HttpRex("200", tokenData);
         return ResponseEntity.ok().body(rex);
     }
 
     @PostMapping("register")
-    private ResponseEntity<HttpRex> signUp(@RequestBody NewUserForm body)
+    private ResponseEntity<HttpRex> signUp(@Valid @RequestBody NewUserForm body)
     {
         User user = new User();
         user.setUserName(body.userName());
         user.setPassword(body.password());
+        user.setRole(body.role());
 
         try
         {
