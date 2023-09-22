@@ -14,6 +14,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler
     @ExceptionHandler(HttpEx.class)
     public ResponseEntity<HttpRex> handleHttpEx(HttpEx exception, WebRequest webRequest)
     {
+        System.out.println("Exception");
         HttpRex errorDetails = new HttpRex(exception.getCode(),exception.getMessage());
         return ResponseEntity.status(exception.getStatus()).body(errorDetails);
     }

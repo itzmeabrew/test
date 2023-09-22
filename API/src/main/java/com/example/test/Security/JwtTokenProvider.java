@@ -18,7 +18,7 @@ public class JwtTokenProvider
 {
     private final String SECRET = "baeldung";
     private final String ISSUER = "Baeldung";
-    private final long TOKEN_VALIDITY_IN_MILLIS = 500L;
+    private final long TOKEN_VALIDITY_IN_MILLIS = 60000;
 
     private static Algorithm algorithm;
     private static JWTVerifier verifier;
@@ -43,7 +43,7 @@ public class JwtTokenProvider
         return jwtForm;
     }
 
-    private DecodedJWT verifyJWT(String jwtToken)
+    private DecodedJWT verifyJWT(String jwtToken) throws HttpEx
     {
         try
         {
@@ -56,7 +56,7 @@ public class JwtTokenProvider
         }
     }
 
-    private DecodedJWT decodedJWT(String jwtToken)
+    private DecodedJWT decodedJWT(String jwtToken) throws HttpEx
     {
         try
         {
@@ -70,7 +70,7 @@ public class JwtTokenProvider
 
     }
 
-    public String decodeJWTClaim(String jwtToken)
+    public String decodeJWTClaim(String jwtToken) throws HttpEx
     {
         try
         {
@@ -79,11 +79,13 @@ public class JwtTokenProvider
         }
         catch (JWTDecodeException e)
         {
+            System.out.println("Error");
+//            return null;
             throw new HttpEx(HttpStatus.UNAUTHORIZED,"401","Invalid or expired accesss token");
         }
     }
 
-    public boolean validateToken(String token)
+    public boolean validateToken(String token) throws HttpEx
     {
         return verifyJWT(token) != null;
     }

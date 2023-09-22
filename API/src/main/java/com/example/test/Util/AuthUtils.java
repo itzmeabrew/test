@@ -14,4 +14,5 @@ public class AuthUtils
         final Collection<? extends GrantedAuthority> authorities = Stream.of(role).collect(Collectors.toSet()).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
         return authorities;
     }
+
 }

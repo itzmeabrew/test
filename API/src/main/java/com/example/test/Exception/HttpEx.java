@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
-public class HttpEx extends RuntimeException
+public class HttpEx extends Exception
 {
     @Getter
     @Setter
