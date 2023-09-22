@@ -1,5 +1,6 @@
 package com.example.test.Service;
 
+import com.example.test.DTO.JWTForm;
 import com.example.test.Exception.HttpEx;
 import com.example.test.Model.User;
 import com.example.test.Repository.UserRepository;
@@ -43,12 +44,11 @@ public class AuthService implements UserDetailsService
         else
         {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setRole("ADMIN");
             return userRepo.save(user);
         }
     }
 
-    public String loginUser(String userName,String password)
+    public JWTForm loginUser(String userName, String password)
     {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName,password));
         SecurityContextHolder.getContext().setAuthentication(authentication);

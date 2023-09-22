@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.test.DTO.JWTForm;
 import com.example.test.Exception.HttpEx;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -28,17 +29,18 @@ public class JwtTokenProvider
         verifier = JWT.require(algorithm).withIssuer(ISSUER).build();
     }
 
-    public String generateToken(Authentication authentication)
+    public JWTForm generateToken(Authentication authentication)
     {
+        final Date issueDate = new Date();
+        final Date expiryDate = new Date(System.currentTimeMillis() + TOKEN_VALIDITY_IN_MILLIS);
         // Create a JWT token with the given username and expiration time
-        String jwtToken = JWT.create()
-                .withIssuer(ISSUER)
+        final String jwtToken = JWT.create().withIssuer(ISSUER)
                 .withSubject(authentication.getName())
-                .withIssuedAt(new Date())
-                .withExpiresAt(new Date(System.currentTimeMillis() + TOKEN_VALIDITY_IN_MILLIS))
+                .withIssuedAt(issueDate).withExpiresAt(expiryDate)
                 .sign(algorithm);
 
-        return jwtToken;
+        JWTForm jwtForm = new JWTForm(jwtToken,issueDate,expiryDate);
+        return jwtForm;
     }
 
     private DecodedJWT verifyJWT(String jwtToken)

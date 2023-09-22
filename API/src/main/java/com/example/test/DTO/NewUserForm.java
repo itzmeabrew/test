@@ -1,5 +1,7 @@
 package com.example.test.DTO;
 
-public record NewUserForm(String userName,String firstName,String lastName,String password)
+import jakarta.validation.constraints.NotEmpty;
+
+public record NewUserForm(@NotEmpty String userName, String firstName, String lastName,@NotEmpty String password,@NotEmpty String role)
 {
 }
