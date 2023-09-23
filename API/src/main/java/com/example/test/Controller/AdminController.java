@@ -1,17 +1,19 @@
 package com.example.test.Controller;
 
-import com.example.test.DTO.*;
-import com.example.test.Exception.HttpEx;
+import com.example.test.Form.*;
 import com.example.test.Model.User;
 import com.example.test.Service.AdminService;
 import com.example.test.Service.AuthService;
+import com.example.test.View.RegisterView;
+import com.example.test.View.UserListView;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin/")
@@ -39,17 +41,14 @@ public class AdminController
         user.setPassword(body.password());
         user.setRole(body.role());
 
-        try
-        {
-            User newUser = authService.createUser(user);
-            HttpRex message = new HttpRex("200",newUser);
-            return ResponseEntity.ok().body(message);
-        }
-        catch (HttpEx e)
-        {
-            HttpRex message = new HttpRex("409","User already exsists");
-            return ResponseEntity.status(409).body(message);
-        }
+
+        final User newUser = authService.registerUser(user);
+        final RegisterView registerView = new RegisterView(newUser.getId(), newUser.getUserName(), newUser.getRole());
+
+        HttpRex message = new HttpRex("200", registerView);
+        return ResponseEntity.ok().body(message);
+
+
     }
 
     @PostMapping("createUser")
@@ -58,13 +57,30 @@ public class AdminController
         try
         {
             User newUser = adminService.createNewUser(body);
-            HttpRex message = new HttpRex("200",newUser);
+            RegisterView view = new RegisterView(newUser.getId(),newUser.getUserName(),newUser.getRole());
+
+            HttpRex message = new HttpRex("200", view);
             return ResponseEntity.ok().body(message);
+        }
+        catch (DataIntegrityViolationException e)
+        {
+            HttpRex message = new HttpRex("400", "User Creation Failed, Duplicate username");
+            return ResponseEntity.badRequest().body(message);
         }
         catch (Exception e)
         {
-            HttpRex message = new HttpRex("500","User Creation Failed");
+//            e.printStackTrace();
+            HttpRex message = new HttpRex("500", "User Creation Failed");
             return ResponseEntity.internalServerError().body(message);
         }
+    }
+
+    @GetMapping("users")
+    private ResponseEntity<HttpRex> listUser()
+    {
+        final List<User> allUsers = adminService.getAllUsers();
+        final List<UserListView> listView = allUsers.stream().map(user -> new UserListView(user.getId(), user.getUserName(), user.getFirstName(),user.getLastName(),user.getRole())).toList();
+        HttpRex message = new HttpRex("200", listView);
+        return ResponseEntity.ok().body(message);
     }
 }

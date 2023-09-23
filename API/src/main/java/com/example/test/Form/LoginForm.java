@@ -1,4 +1,4 @@
-package com.example.test.DTO;
+package com.example.test.Form;
 
 import jakarta.validation.constraints.NotNull;
 

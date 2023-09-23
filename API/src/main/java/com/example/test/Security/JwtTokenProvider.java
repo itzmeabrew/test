@@ -6,8 +6,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.example.test.DTO.JWTForm;
-import com.example.test.Exception.HttpEx;
+import com.example.test.Exception.HttpRuntimeException;
+import com.example.test.Form.JWTForm;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -43,7 +43,7 @@ public class JwtTokenProvider
         return jwtForm;
     }
 
-    private DecodedJWT verifyJWT(String jwtToken) throws HttpEx
+    private DecodedJWT verifyJWT(String jwtToken)
     {
         try
         {
@@ -52,11 +52,11 @@ public class JwtTokenProvider
         }
         catch (JWTVerificationException e)
         {
-            throw new HttpEx(HttpStatus.UNAUTHORIZED,"401","Invalid or expired accesss token");
+            throw new HttpRuntimeException(HttpStatus.UNAUTHORIZED,"Invalid or expired accesss token");
         }
     }
 
-    private DecodedJWT decodedJWT(String jwtToken) throws HttpEx
+    private DecodedJWT decodedJWT(String jwtToken)
     {
         try
         {
@@ -65,12 +65,12 @@ public class JwtTokenProvider
         }
         catch (JWTDecodeException e)
         {
-            throw new HttpEx(HttpStatus.UNAUTHORIZED,"401","Invalid or expired accesss token");
+            throw new HttpRuntimeException(HttpStatus.UNAUTHORIZED,"Invalid or expired accesss token");
         }
 
     }
 
-    public String decodeJWTClaim(String jwtToken) throws HttpEx
+    public String decodeJWTClaim(String jwtToken)
     {
         try
         {
@@ -81,11 +81,11 @@ public class JwtTokenProvider
         {
             System.out.println("Error");
 //            return null;
-            throw new HttpEx(HttpStatus.UNAUTHORIZED,"401","Invalid or expired accesss token");
+            throw new HttpRuntimeException(HttpStatus.UNAUTHORIZED,"Invalid or expired accesss token");
         }
     }
 
-    public boolean validateToken(String token) throws HttpEx
+    public boolean validateToken(String token)
     {
         return verifyJWT(token) != null;
     }

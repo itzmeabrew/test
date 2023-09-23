@@ -1,7 +1,7 @@
 package com.example.test.Service;
 
-import com.example.test.DTO.JWTForm;
-import com.example.test.Exception.HttpEx;
+import com.example.test.Exception.HttpRuntimeException;
+import com.example.test.Form.JWTForm;
 import com.example.test.Model.User;
 import com.example.test.Repository.UserRepository;
 import com.example.test.Security.JwtTokenProvider;
@@ -33,13 +33,13 @@ public class AuthService implements UserDetailsService
     @Autowired
     private JwtTokenProvider tokenProvider;
 
-    public User createUser(User user) throws HttpEx
+    public User registerUser(User user)
     {
         final String userName = user.getUserName();
 
         if(userRepo.existsByUserName(userName))
         {
-            throw new HttpEx(HttpStatus.CONFLICT,"409","User already exsists");
+            throw new HttpRuntimeException(HttpStatus.CONFLICT,"User already exsists");
         }
         else
         {
@@ -62,7 +62,7 @@ public class AuthService implements UserDetailsService
         final User user = userRepo.findByUserName(username);
         if (user == null)
         {
-            throw new UsernameNotFoundException("User not found");
+            throw new HttpRuntimeException(HttpStatus.NOT_FOUND,"User not found");
         }
         else
         {
