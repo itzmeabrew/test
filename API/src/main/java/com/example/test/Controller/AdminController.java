@@ -83,4 +83,12 @@ public class AdminController
         HttpRex message = new HttpRex("200", listView);
         return ResponseEntity.ok().body(message);
     }
+
+    @DeleteMapping("user/{id}")
+    private ResponseEntity<HttpRex> deleteUser(@PathVariable String id)
+    {
+        adminService.deleteUser(Integer.parseInt(id));
+        HttpRex message = new HttpRex("200", "User Deleted");
+        return ResponseEntity.ok().body(message);
+    }
 }

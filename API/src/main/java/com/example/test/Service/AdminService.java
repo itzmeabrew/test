@@ -43,4 +43,9 @@ public class AdminService
             return allUsers;
         }
     }
+
+    public void deleteUser(Integer id)
+    {
+        userRepo.deleteById(id);
+    }
 }
