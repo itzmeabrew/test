@@ -1,14 +1,19 @@
 package com.example.test.Service;
 
+import com.example.test.Exception.HttpRuntimeException;
 import com.example.test.Form.CreateUserForm;
+import com.example.test.Form.UpdateUserForm;
 import com.example.test.Model.User;
 import com.example.test.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class AdminService
@@ -33,19 +38,32 @@ public class AdminService
 
     public List<User> getAllUsers()
     {
-        final List<User> allUsers= userRepo.findByRole("USER");
-        if(allUsers == null)
-        {
-            return new ArrayList<User>();
-        }
-        else
-        {
-            return allUsers;
-        }
+        final List<User> allUsers= userRepo.findByRoleOrderByUserNameAsc("USER");
+        return Objects.requireNonNullElseGet(allUsers, ArrayList::new);
     }
 
     public void deleteUser(Integer id)
     {
         userRepo.deleteById(id);
+    }
+
+    public User updateUser(Integer id, UpdateUserForm form)
+    {
+        Optional<User> user = userRepo.findById(id);
+        if (user.isPresent())
+        {
+            User updatedUser = user.get();
+            updatedUser.setId(id);
+            updatedUser.setUserName(form.userName());
+            updatedUser.setFirstName(form.firstName());
+            updatedUser.setLastName(form.lastName());
+            updatedUser.setPassword(passwordEncoder.encode(form.password()));
+
+            return userRepo.save(updatedUser);
+        }
+        else
+        {
+            throw new HttpRuntimeException(HttpStatus.NOT_FOUND,"No user found with that id");
+        }
     }
 }

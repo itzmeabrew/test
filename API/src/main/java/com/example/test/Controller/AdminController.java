@@ -51,6 +51,15 @@ public class AdminController
 
     }
 
+    @GetMapping("users")
+    private ResponseEntity<HttpRex> listUser()
+    {
+        final List<User> allUsers = adminService.getAllUsers();
+        final List<UserListView> listView = allUsers.stream().map(user -> new UserListView(user.getId(), user.getUserName(), user.getFirstName(),user.getLastName(),user.getRole())).toList();
+        HttpRex message = new HttpRex("200", listView);
+        return ResponseEntity.ok().body(message);
+    }
+
     @PostMapping("createUser")
     private ResponseEntity<HttpRex> createNewUser(@Valid @RequestBody CreateUserForm body)
     {
@@ -75,19 +84,19 @@ public class AdminController
         }
     }
 
-    @GetMapping("users")
-    private ResponseEntity<HttpRex> listUser()
+    @PutMapping("user/{id}")
+    private ResponseEntity<HttpRex> updateUser(@PathVariable Integer id,@Valid @RequestBody UpdateUserForm form)
     {
-        final List<User> allUsers = adminService.getAllUsers();
-        final List<UserListView> listView = allUsers.stream().map(user -> new UserListView(user.getId(), user.getUserName(), user.getFirstName(),user.getLastName(),user.getRole())).toList();
-        HttpRex message = new HttpRex("200", listView);
+        User updatedUser = adminService.updateUser(id,form);
+        RegisterView view = new RegisterView(updatedUser.getId(),updatedUser.getUserName(),updatedUser.getRole());
+        HttpRex message = new HttpRex("200", view);
         return ResponseEntity.ok().body(message);
     }
 
     @DeleteMapping("user/{id}")
-    private ResponseEntity<HttpRex> deleteUser(@PathVariable String id)
+    private ResponseEntity<HttpRex> deleteUser(@PathVariable Integer id)
     {
-        adminService.deleteUser(Integer.parseInt(id));
+        adminService.deleteUser(id);
         HttpRex message = new HttpRex("200", "User Deleted");
         return ResponseEntity.ok().body(message);
     }

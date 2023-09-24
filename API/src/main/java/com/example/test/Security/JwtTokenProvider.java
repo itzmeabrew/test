@@ -8,6 +8,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.test.Exception.HttpRuntimeException;
 import com.example.test.Form.JWTForm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -16,39 +17,40 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider
 {
-    private final String SECRET = "baeldung";
-    private final String ISSUER = "Baeldung";
-    private final long TOKEN_VALIDITY_IN_MILLIS = 60000;
+    private final String jwtIssuer;
+    private final long jwtValidity;
 
     private static Algorithm algorithm;
     private static JWTVerifier verifier;
 
-    JwtTokenProvider()
+    public JwtTokenProvider(@Value("${jwt.secret}") String jwtSecret ,@Value("${jwt.issuer}") String jwtIssuer ,@Value("${jwt.validity}") long jwtValidity)
     {
-        algorithm = Algorithm.HMAC256(SECRET);
-        verifier = JWT.require(algorithm).withIssuer(ISSUER).build();
+        this.jwtIssuer = jwtIssuer;
+        this.jwtValidity = jwtValidity;
+
+        algorithm = Algorithm.HMAC256(jwtSecret);
+        verifier = JWT.require(algorithm).withIssuer(jwtIssuer).build();
     }
 
     public JWTForm generateToken(Authentication authentication)
     {
         final Date issueDate = new Date();
-        final Date expiryDate = new Date(System.currentTimeMillis() + TOKEN_VALIDITY_IN_MILLIS);
+        final Date expiryDate = new Date(System.currentTimeMillis() + jwtValidity);
+        final String userName = authentication.getName();
         // Create a JWT token with the given username and expiration time
-        final String jwtToken = JWT.create().withIssuer(ISSUER)
-                .withSubject(authentication.getName())
+        final String jwtToken = JWT.create().withIssuer(jwtIssuer)
+                .withSubject(userName)
                 .withIssuedAt(issueDate).withExpiresAt(expiryDate)
                 .sign(algorithm);
 
-        JWTForm jwtForm = new JWTForm(jwtToken,issueDate,expiryDate);
-        return jwtForm;
+        return new JWTForm(userName, jwtToken, issueDate, expiryDate);
     }
 
     private DecodedJWT verifyJWT(String jwtToken)
     {
         try
         {
-            DecodedJWT decodedJWT = verifier.verify(jwtToken);
-            return decodedJWT;
+            return verifier.verify(jwtToken);
         }
         catch (JWTVerificationException e)
         {
