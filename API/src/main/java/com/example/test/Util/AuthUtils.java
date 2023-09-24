@@ -6,6 +6,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,5 +33,15 @@ public class AuthUtils
             // If the user is not authenticated or UserDetails is not available, return null
             return null;
         }
+    }
+
+    public static String GetDateTime()
+    {
+        LocalDateTime now = LocalDateTime.now();
+        // Define a custom date and time format pattern
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy'T'HH-mm-ss");
+        // Format the current date and time using the pattern
+
+        return now.format(formatter);
     }
 }
