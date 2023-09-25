@@ -14,6 +14,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Component
 public class JwtTokenProvider
 {
@@ -37,13 +41,14 @@ public class JwtTokenProvider
         final Date issueDate = new Date();
         final Date expiryDate = new Date(System.currentTimeMillis() + jwtValidity);
         final String userName = authentication.getName();
+        final Set<String> role = authentication.getAuthorities().stream().map(Object::toString).collect(Collectors.toSet());
         // Create a JWT token with the given username and expiration time
         final String jwtToken = JWT.create().withIssuer(jwtIssuer)
                 .withSubject(userName)
                 .withIssuedAt(issueDate).withExpiresAt(expiryDate)
                 .sign(algorithm);
 
-        return new JWTForm(userName, jwtToken, issueDate, expiryDate);
+        return new JWTForm(userName, role, jwtToken, issueDate, expiryDate);
     }
 
     private DecodedJWT verifyJWT(String jwtToken)

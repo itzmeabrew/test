@@ -1,0 +1,15 @@
+.data
+{
+  margin-top: 100px;
+}
+
+.ct
+{
+  display: inline-flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-content: center;
+  justify-content: space-between;
+  align-items: center;
+}
+
