@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,8 +58,10 @@ public class AdminService
             updatedUser.setUserName(form.userName());
             updatedUser.setFirstName(form.firstName());
             updatedUser.setLastName(form.lastName());
-            updatedUser.setPassword(passwordEncoder.encode(form.password()));
-
+            if(StringUtils.hasText(form.password()))
+            {
+                updatedUser.setPassword(passwordEncoder.encode(form.password()));
+            }
             return userRepo.save(updatedUser);
         }
         else

@@ -11,13 +11,20 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AuthInterceptor } from './auth/auth.interceptor';
+import { NgbModal, NgbModalModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { EditModalComponent } from './component/admin-layout/edit-modal/edit-modal.component';
+import { NavHeaderComponent } from './component/nav-header/nav-header.component';
+import { AddUserModalComponent } from './component/admin-layout/add-user-modal/add-user-modal.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AdminLayoutComponent,
     UserLayoutComponent,
-    LoginComponent
+    LoginComponent,
+    EditModalComponent,
+    NavHeaderComponent,
+    AddUserModalComponent
   ],
   imports: [
     BrowserModule,
@@ -30,6 +37,7 @@ import { AuthInterceptor } from './auth/auth.interceptor';
       positionClass: 'toast-bottom-right',
       preventDuplicates: true,
     }),
+    NgbModalModule,
   ],
   providers:
   [
