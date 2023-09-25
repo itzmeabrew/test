@@ -8,12 +8,37 @@ import { Observable } from 'rxjs';
 export class LoginService
 {
 
-  ENDPOINT = "localhost:8080/api/admin/";
+  ENDPOINT = "/api/admin/";
 
   constructor(private http: HttpClient) { }
 
   public login(form: any): Observable<any>
   {
     return this.http.post(this.ENDPOINT + "login", form);
+  }
+
+  public setAccessToken(accessToken: string): void
+  {
+    localStorage.setItem("accessToken", accessToken);
+  }
+
+  public getAccessToken(): string
+  {
+    return localStorage.getItem ("accessToken");
+  }
+
+  public logOut(): void
+  {
+    localStorage.clear();
+  }
+
+  public setRole(role: string): void
+  {
+    localStorage.setItem("role", role);
+  }
+
+  public getRole(): string
+  {
+    return localStorage.getItem("role");
   }
 }

@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { LoginService } from 'src/app/service/login.service';
 
 @Component({
@@ -17,20 +19,44 @@ export class LoginComponent
     });
 
 
-  constructor(private auth: LoginService){}
+  constructor(private auth: LoginService, private router: Router, private toastrService: ToastrService) {}
 
   public login(): void
   {
-    // console.log(this.loginForm.value);
+    console.log("Login");
     const loginData = this.loginForm.value;
-    this.auth.login(loginData).subscribe((response) =>
+    if (this.loginForm.valid)
     {
-      console.log(response);
-    },
-    (error) =>
-    {
-      console.error(error);
-    });
+      this.auth.login(loginData).subscribe(
+        {
+          next: (response) =>
+          {
+            const data = response.data;
+            const status = response.status;
+            const role = data.role[0];
 
+            this.auth.setAccessToken(data.accessToken);
+            this.auth.setRole(role);
+
+            if (role === 'ADMIN')
+            {
+              this.router.navigateByUrl('admin');
+            }
+            else
+            {
+              this.router.navigateByUrl('user');
+            }
+          },
+          error: (err) =>
+          {
+            console.error(err);
+            this.toastrService.error('Error');
+          }
+      });
+    }
+    else
+    {
+      this.toastrService.error("Invalid login data")
+    }
   }
 }
