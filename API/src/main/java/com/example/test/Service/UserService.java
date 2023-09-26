@@ -40,7 +40,7 @@ public class UserService
             Path directoryPath = Path.of(uploadDirectory);
             Files.createDirectories(directoryPath);
 
-            final String originalFileName = AuthUtils.GetDateTime() + "<+>" + file.getOriginalFilename();
+            final String originalFileName = (AuthUtils.GetDateTime() + "_+_" + file.getOriginalFilename()).replaceAll("\\s","");
             final Path filePath = directoryPath.resolve(originalFileName);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 

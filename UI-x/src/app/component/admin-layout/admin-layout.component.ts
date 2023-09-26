@@ -32,19 +32,15 @@ export class AdminLayoutComponent implements OnInit
       {
         next: res =>
         {
+          console.log("User loaded");
+
           this.userList.length = 0;
           const users: Array<any> = res.data;
-          // console.log(userList);
 
           users.forEach(user =>
             {
-              // console.log(user);
-              // const newUser: User = {id: user.id, userName:user.userName, firstName:user.firstName, lastName:user.lastName, role:user.role}
               this.userList.push(user);
             });
-
-            console.log(this.userList);
-
         },
         error: err =>
         {
@@ -60,6 +56,10 @@ export class AdminLayoutComponent implements OnInit
   {
 		const modalRef = this.modalService.open(EditModalComponent);
     modalRef.componentInstance.userData = user;
+    modalRef.result.then((res)=>
+    {
+      this.getAllUsers();
+    });
 	}
 
   public openAdd(): void

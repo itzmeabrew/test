@@ -9,13 +9,19 @@
     <form [formGroup]="editFrom" (ngSubmit)="edit()" class="edit-form">
       <div class="mb-3 row">
         <div class="col">
-          <input type="text" formControlName="firstName" class="form-control" id="staticEmail" placeholder="Enter First Name">
+          <input type="text" formControlName="userName" class="form-control" placeholder="Enter Username">
+          <small class="text-danger" *ngIf="(editFrom.controls['userName'].touched || editFrom.controls['userName'].dirty) && (editFrom.controls['userName'].errors)">Please enter a First Namee</small>
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <div class="col">
+          <input type="text" formControlName="firstName" class="form-control" placeholder="Enter First Name">
           <small class="text-danger" *ngIf="(editFrom.controls['firstName'].touched || editFrom.controls['firstName'].dirty) && (editFrom.controls['firstName'].errors)">Please enter a First Namee</small>
         </div>
       </div>
       <div class="mb-3 row">
         <div class="col">
-          <input type="text" formControlName="lastName" class="form-control" placeholder="Enter Last Name" id="inputPassword">
+          <input type="text" formControlName="lastName" class="form-control" placeholder="Enter Last Name">
           <small class="text-danger" *ngIf="(editFrom.controls['lastName'].touched || editFrom.controls['lastName'].dirty) && (editFrom.controls['lastName'].errors)">Please enter a Last Name</small>
         </div>
       </div>

@@ -1,1 +1,58 @@
-<p>user-layout works!</p>
+<app-nav-header [role]="'User'"></app-nav-header>
+
+<div class="container">
+  <div class="card file">
+    <div class="card-header ct">
+      <div class="title">
+        <h5>User Details</h5>
+      </div>
+      <div class="action">
+        <button type="button" class="btn btn-success" (click)="upload()">Upload</button>
+      </div>
+    </div>
+    <div class="card-body">
+        <div appFileDragDrop (filesDropped)="onFilesDropped($event)" class="file-drop-zone">
+          <div class="content">
+            <p *ngIf="!file">{{filePromt}}</p>
+            <p *ngIf="file">{{file.name}}</p>
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <div class="card data">
+    <div class="card-header">
+      <div class="title">
+        <h5>File Details</h5>
+      </div>
+    </div>
+    <div class="card-body">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">File Name</th>
+            <th scope="col">File Type</th>
+            <th scope="col">File Size</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let file of FileList; let i = index">
+            <th scope="row">{{i + 1}}</th>
+            <td>{{file.fileName | fileName}}</td>
+            <td>{{file.fileName | fileType}}</td>
+            <td>{{file.fileSize}} MB</td>
+            <td class="action">
+             &nbsp;&nbsp;&nbsp;
+             <button type="button" class="btn btn-danger btn-sm" (click)="deleteFile(file)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<br>
+<br>

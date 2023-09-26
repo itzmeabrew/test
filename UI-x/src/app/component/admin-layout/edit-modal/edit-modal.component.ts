@@ -16,6 +16,7 @@ export class EditModalComponent implements OnInit
 
   editFrom: FormGroup = new FormGroup(
     {
+      userName: new FormControl('' , Validators.required),
       firstName: new FormControl('', Validators.required),
       lastName: new FormControl('', Validators.required)
     });
@@ -24,6 +25,7 @@ export class EditModalComponent implements OnInit
 
   ngOnInit(): void
   {
+    this.editFrom.controls["userName"].setValue(this.userData.userName);
     this.editFrom.controls["firstName"].setValue(this.userData.firstName);
     this.editFrom.controls["lastName"].setValue(this.userData.lastName);
   }

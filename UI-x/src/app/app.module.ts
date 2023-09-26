@@ -15,6 +15,9 @@ import { NgbModal, NgbModalModule, NgbModule } from '@ng-bootstrap/ng-bootstrap'
 import { EditModalComponent } from './component/admin-layout/edit-modal/edit-modal.component';
 import { NavHeaderComponent } from './component/nav-header/nav-header.component';
 import { AddUserModalComponent } from './component/admin-layout/add-user-modal/add-user-modal.component';
+import { FileDragDropDirective } from './directive/file-drag-drop.directive';
+import { FileNamePipe } from './pipe/file-name.pipe';
+import { FileTypePipe } from './pipe/file-type.pipe';
 
 @NgModule({
   declarations: [
@@ -24,7 +27,10 @@ import { AddUserModalComponent } from './component/admin-layout/add-user-modal/a
     LoginComponent,
     EditModalComponent,
     NavHeaderComponent,
-    AddUserModalComponent
+    AddUserModalComponent,
+    FileDragDropDirective,
+    FileNamePipe,
+    FileTypePipe
   ],
   imports: [
     BrowserModule,
