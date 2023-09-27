@@ -44,6 +44,7 @@
             <td>{{file.fileName | fileType}}</td>
             <td>{{file.fileSize}} MB</td>
             <td class="action">
+              <button type="button" class="btn btn-primary btn-sm" (click)="downloadFile(file)">Download</button>
              &nbsp;&nbsp;&nbsp;
              <button type="button" class="btn btn-danger btn-sm" (click)="deleteFile(file)">Delete</button>
             </td>

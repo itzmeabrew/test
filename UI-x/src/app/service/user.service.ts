@@ -29,4 +29,9 @@ export class UserService
     return this.http.delete(this.ENDPOINT + "file/" + id);
   }
 
+  public downloadFile(id: number): Observable<any>
+  {
+    return this.http.get(this.ENDPOINT + "file/" + id, { responseType: 'blob' });
+  }
+
 }

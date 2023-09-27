@@ -6,6 +6,8 @@ import com.example.test.Service.UserService;
 import com.example.test.Util.AuthUtils;
 import com.example.test.View.UserFilesView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -57,6 +59,18 @@ public class UserController
         return ResponseEntity.ok().body(rex);
     }
 
+    @GetMapping("file/{id}")
+    public ResponseEntity<Resource> getFile(@PathVariable Integer id)
+    {
+        Resource file = userService.downloadFile(id);
+
+        final String contentType = "application/octet-stream";
+        return ResponseEntity.ok()
+                .contentType(org.springframework.http.MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+                .body(file);
+    }
+
     @DeleteMapping("file/{id}")
     private ResponseEntity<HttpRex> deleteFile(@PathVariable Integer id)
     {
@@ -64,4 +78,6 @@ public class UserController
         final HttpRex rex = new HttpRex("200","File deleted");
         return ResponseEntity.ok().body(rex);
     }
+
+
 }

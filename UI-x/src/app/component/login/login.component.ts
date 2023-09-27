@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -9,7 +9,7 @@ import { LoginService } from 'src/app/service/login.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent
+export class LoginComponent implements OnInit
 {
 
   loginForm: FormGroup = new FormGroup(
@@ -20,6 +20,26 @@ export class LoginComponent
 
 
   constructor(private auth: LoginService, private router: Router, private toastrService: ToastrService) {}
+
+  ngOnInit(): void
+  {
+    if(this.auth.isLoggedIn())
+    {
+      const role = this.auth.getRole();
+      if(role === 'ADMIN')
+      {
+        this.router.navigateByUrl('admin');
+      }
+      else if(role === 'USER')
+      {
+        this.router.navigateByUrl('user');
+      }
+      else
+      {
+        console.log("No session");
+      }
+    }
+  }
 
   public login(): void
   {

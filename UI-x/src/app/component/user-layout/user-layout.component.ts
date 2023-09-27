@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from 'src/app/service/user.service';
+import { saveAs } from 'file-saver';
+import { FileNamePipe } from 'src/app/pipe/file-name.pipe';
+import { FileTypePipe } from 'src/app/pipe/file-type.pipe';
 
 @Component({
   selector: 'app-user-layout',
@@ -14,7 +17,7 @@ export class UserLayoutComponent implements OnInit
 
   FileList = new Array<any>();
 
-  constructor(private usr: UserService, private tostr: ToastrService){}
+  constructor(private usr: UserService, private tostr: ToastrService, private fn: FileNamePipe, private ft: FileTypePipe){}
 
   ngOnInit(): void
   {
@@ -80,15 +83,31 @@ export class UserLayoutComponent implements OnInit
     }
   }
 
-  public deleteFile(file: any)
+  public deleteFile(file: any): void
   {
     const id = file.id;
     this.usr.deleteFile(id).subscribe({
       next: (res)=>
       {
-        console.log(res);
         this.getFileList();
         this.tostr.success("File deleted successfully");
+      },
+      error: (err)=>
+      {
+        this.tostr.error("File deletion error");
+        console.error(err);
+      }
+    });
+  }
+
+  public downloadFile(file: any)
+  {
+    const id = file.id;
+    this.usr.downloadFile(id).subscribe({
+      next: (res)=>
+      {
+        console.log(res);
+        saveAs(res,this.fn.transform(file.fileName));
       },
       error: (err)=>
       {

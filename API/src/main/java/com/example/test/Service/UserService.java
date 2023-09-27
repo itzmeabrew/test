@@ -9,12 +9,15 @@ import com.example.test.View.FileListDTO;
 import com.example.test.View.UserFilesView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.springframework.core.io.Resource;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 
@@ -61,6 +64,12 @@ public class UserService
         }
     }
 
+    public Resource downloadFile(Integer id)
+    {
+        final UserFiles file = fileRepo.findById(id).get();
+        return loadFileAsResource(file.getFileName());
+    }
+
     public UserFilesView listUserFiles(String userName)
     {
 //        User user = userRepo.findByUserName(userName);
@@ -74,5 +83,26 @@ public class UserService
     public void deleteFile(Integer id)
     {
         fileRepo.deleteById(id);
+    }
+
+    private Resource loadFileAsResource(String file)
+    {
+        try
+        {
+            Path filePath = Path.of(file);
+            Resource resource = new UrlResource(filePath.toUri());
+            if (resource.exists())
+            {
+                return resource;
+            }
+            else
+            {
+                throw new RuntimeException("File not found: " + file);
+            }
+        }
+        catch (MalformedURLException ex)
+        {
+            throw new RuntimeException("File not found: " + file, ex);
+        }
     }
 }

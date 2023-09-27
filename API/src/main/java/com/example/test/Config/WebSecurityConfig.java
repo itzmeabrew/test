@@ -54,13 +54,6 @@ public class WebSecurityConfig
         return new BCryptPasswordEncoder();
     }
 
-    /*@Bean
-    public UserDetailsService userDetailsService()
-    {
-        return new AuthService();
-    }*/
-
-
     @Bean
     public DaoAuthenticationProvider authenticationProvider()
     {

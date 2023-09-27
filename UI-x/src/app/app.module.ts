@@ -47,7 +47,8 @@ import { FileTypePipe } from './pipe/file-type.pipe';
   ],
   providers:
   [
-    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}
+    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+    FileTypePipe,FileNamePipe
   ],
   bootstrap: [AppComponent]
 })

@@ -32,6 +32,19 @@ export class LoginService
     localStorage.clear();
   }
 
+  public isLoggedIn(): boolean
+  {
+    if (localStorage.getItem("accessToken") && localStorage.getItem("role"))
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+
+  }
+
   public setRole(role: string): void
   {
     localStorage.setItem("role", role);
