@@ -33,3 +33,8 @@ form button
 {
   margin-top: 20px;
 }
+
+.rx > p
+{
+  float: right;
+}

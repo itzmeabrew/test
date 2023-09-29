@@ -20,7 +20,7 @@ export class AdminService
 
   public addUser(user: any): Observable<any>
   {
-    return this.http.post(this.ENDPOINT + "/createUser",user);
+    return this.http.post(this.ENDPOINT + "/createUser", user);
   }
 
   public editUser(edit: any, id: number): Observable<any>

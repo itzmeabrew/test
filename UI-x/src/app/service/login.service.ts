@@ -17,6 +17,11 @@ export class LoginService
     return this.http.post(this.ENDPOINT + "login", form);
   }
 
+  public addAdmin(admin: any): Observable<any>
+  {
+    return this.http.post(this.ENDPOINT + "register", admin);
+  }
+
   public setAccessToken(accessToken: string): void
   {
     localStorage.setItem("accessToken", accessToken);

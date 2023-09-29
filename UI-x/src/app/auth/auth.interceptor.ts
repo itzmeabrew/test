@@ -22,7 +22,7 @@ export class AuthInterceptor implements HttpInterceptor
     let newRequest:HttpRequest<any> = null;
 
     // debugger
-    if(!request.url.includes("api/admin/login"))
+    if(!(request.url.includes("api/admin/login") || request.url.includes("api/admin/register")))
     {
       if (accessToken)
       {

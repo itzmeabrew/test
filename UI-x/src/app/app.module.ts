@@ -18,6 +18,8 @@ import { AddUserModalComponent } from './component/admin-layout/add-user-modal/a
 import { FileDragDropDirective } from './directive/file-drag-drop.directive';
 import { FileNamePipe } from './pipe/file-name.pipe';
 import { FileTypePipe } from './pipe/file-type.pipe';
+import { AddAdminComponent } from './component/add-admin/add-admin.component';
+import { NotFoundComponent } from './component/not-found/not-found.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,9 @@ import { FileTypePipe } from './pipe/file-type.pipe';
     AddUserModalComponent,
     FileDragDropDirective,
     FileNamePipe,
-    FileTypePipe
+    FileTypePipe,
+    AddAdminComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,

@@ -70,7 +70,7 @@ export class LoginComponent implements OnInit
           error: (err) =>
           {
             console.error(err);
-            this.toastrService.error('Error');
+            this.toastrService.error('Error, No such user');
           }
       });
     }
