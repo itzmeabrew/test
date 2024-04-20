@@ -35,7 +35,6 @@ import java.util.List;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
-@EnableWebSecurity
 @EnableMethodSecurity
 public class WebSecurityConfig
 {
@@ -92,6 +91,7 @@ public class WebSecurityConfig
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/admin/login").permitAll()
                         .requestMatchers("/api/admin/register").permitAll()
+                        .requestMatchers("/api/admin/ship").permitAll()
                         .anyRequest().authenticated());
 
         http.authenticationProvider(authenticationProvider());

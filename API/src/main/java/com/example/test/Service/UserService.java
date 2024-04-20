@@ -1,25 +1,16 @@
 package com.example.test.Service;
 
+import com.example.test.Exception.HttpRuntimeException;
+import com.example.test.Form.CreateUserForm;
+import com.example.test.Form.UpdateUserForm;
 import com.example.test.Model.User;
-import com.example.test.Model.UserFiles;
-import com.example.test.Repository.UserFileRepositoy;
 import com.example.test.Repository.UserRepository;
-import com.example.test.Util.AuthUtils;
-import com.example.test.View.FileListDTO;
-import com.example.test.View.UserFilesView;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.core.io.Resource;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.List;
+import org.springframework.util.StringUtils;
+import java.util.Optional;
 
 @Service
 public class UserService
@@ -28,81 +19,43 @@ public class UserService
     UserRepository userRepo;
 
     @Autowired
-    UserFileRepositoy fileRepo;
+    private PasswordEncoder passwordEncoder;
 
-    @Value("${file.path}")
-    private String direcotry;
-
-    public boolean uploadFile(MultipartFile file, String userName)
+    public User createNewUser(CreateUserForm userForm)
     {
-        try
+        User newUser = new User();
+        newUser.setUserName(userForm.userName());
+        newUser.setFirstName(userForm.firstName());
+        newUser.setLastName(userForm.lastName());
+        newUser.setPassword(passwordEncoder.encode(userForm.password()));
+
+        return userRepo.save(newUser);
+    }
+
+    public void deleteUser(Integer id)
+    {
+        userRepo.deleteById(id);
+    }
+
+    public User updateUser(Integer id, UpdateUserForm form)
+    {
+        Optional<User> user = userRepo.findById(id);
+        if (user.isPresent())
         {
-            final String uploadDirectory = direcotry + "/" + userName ;
-
-            // Create the directory if it doesn't exist
-            Path directoryPath = Path.of(uploadDirectory);
-            Files.createDirectories(directoryPath);
-
-            final String originalFileName = (AuthUtils.GetDateTime() + "_+_" + file.getOriginalFilename()).replaceAll("\\s","");
-            final Path filePath = directoryPath.resolve(originalFileName);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-            final User user = userRepo.findByUserName(userName);
-            UserFiles newFile = new UserFiles();
-            newFile.setUser(user);
-            newFile.setFileName(String.valueOf(filePath));
-            newFile.setFileSize((float) (file.getSize() * 0.000001));
-
-            fileRepo.save(newFile);
-
-            return true;
-        }
-        catch (IOException e)
-        {
-            // Handle exceptions (e.g., file I/O errors)
-            return false;
-        }
-    }
-
-    public Resource downloadFile(Integer id)
-    {
-        final UserFiles file = fileRepo.findById(id).get();
-        return loadFileAsResource(file.getFileName());
-    }
-
-    public UserFilesView listUserFiles(String userName)
-    {
-//        User user = userRepo.findByUserName(userName);
-        User user = userRepo.findByUserNameOrderByFilesDesc(userName);
-        List<FileListDTO> fileList = user.getFiles().stream().map(userFile ->
-                new FileListDTO(userFile.getId(), userFile.getFileName(),userFile.getFileSize())).toList();
-
-        return new UserFilesView(user.getId(),user.getUserName(),fileList);
-    }
-
-    public void deleteFile(Integer id)
-    {
-        fileRepo.deleteById(id);
-    }
-
-    private Resource loadFileAsResource(String file)
-    {
-        try
-        {
-            Path filePath = Path.of(file);
-            Resource resource = new UrlResource(filePath.toUri());
-            if (resource.exists())
+            User updatedUser = user.get();
+            updatedUser.setId(id);
+            updatedUser.setUserName(form.userName());
+            updatedUser.setFirstName(form.firstName());
+            updatedUser.setLastName(form.lastName());
+            if(StringUtils.hasText(form.password()))
             {
-                return resource;
+                updatedUser.setPassword(passwordEncoder.encode(form.password()));
             }
-            else
-            {
-                throw new RuntimeException("File not found: " + file);
-            }
+            return userRepo.save(updatedUser);
         }
-        catch (MalformedURLException ex)
+        else
         {
-            throw new RuntimeException("File not found: " + file, ex);
+            throw new HttpRuntimeException(HttpStatus.NOT_FOUND,"No user found with that id");
         }
     }
 }

@@ -27,14 +27,10 @@ public class User
     private String firstName;
     private String lastName;
     private String password;
-    private String role;
     @Column(name = "created_date")
     @CreationTimestamp
     private LocalDate createdDate;
     @Column(name = "updated_date")
     @UpdateTimestamp
     private LocalDate updatedDate;
-
-    @OneToMany(mappedBy = "user")
-    List<UserFiles> files;
 }

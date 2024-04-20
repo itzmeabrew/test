@@ -1,83 +1,89 @@
 package com.example.test.Controller;
 
-import com.example.test.Form.HttpRex;
-import com.example.test.Model.UserFiles;
+import com.example.test.Form.*;
+import com.example.test.Model.User;
 import com.example.test.Service.UserService;
-import com.example.test.Util.AuthUtils;
-import com.example.test.View.UserFilesView;
+import com.example.test.Service.AuthService;
+import com.example.test.View.RegisterView;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
-@RequestMapping("/api/user/")
+@RequestMapping("/api/admin/")
 public class UserController
 {
     @Autowired
-    UserService userService;
-    @PostMapping("file")
-    public ResponseEntity<HttpRex> uploadFile(@RequestParam("file") MultipartFile file)
-    {
-        // Handle the uploaded file (e.g., save it to a directory or process it)
-        // Return a response indicating success or failure
-        if(file==null)
-        {
-            final HttpRex rex = new HttpRex("400","File should not be empty");
-            return ResponseEntity.badRequest().body(rex);
-        }
-        else
-        {
-            final UserDetails details = AuthUtils.getUserDetails();
-            final String userName = details.getUsername();
-            if(userService.uploadFile(file,userName))
-            {
-                final HttpRex rex = new HttpRex("200","File upload complete");
-                return ResponseEntity.ok().body(rex);
-            }
-            else
-            {
-                final HttpRex rex = new HttpRex("500","Error uploading the file");
-                return ResponseEntity.internalServerError().body(rex);
-            }
-        }
-    }
+    AuthService authService;
 
-    @GetMapping("file")
-    public ResponseEntity<HttpRex> getFileList()
-    {
-        final UserDetails details = AuthUtils.getUserDetails();
-        final String userName = details.getUsername();
+    @Autowired
+    UserService adminService;
 
-        UserFilesView data = userService.listUserFiles(userName);
-        final HttpRex rex = new HttpRex("200",data);
+    @PostMapping("login")
+    private ResponseEntity<HttpRex> login(@Valid @RequestBody LoginForm body)
+    {
+        final JWTForm tokenData = authService.loginUser(body.userName(), body.password());
+        HttpRex rex = new HttpRex("200", tokenData);
         return ResponseEntity.ok().body(rex);
     }
 
-    @GetMapping("file/{id}")
-    public ResponseEntity<Resource> getFile(@PathVariable Integer id)
+    @PostMapping("register")
+    private ResponseEntity<HttpRex> signUp(@Valid @RequestBody RegistrationForm body)
     {
-        Resource file = userService.downloadFile(id);
+        User user = new User();
+        user.setUserName(body.userName());
+        user.setPassword(body.password());
 
-        final String contentType = "application/octet-stream";
-        return ResponseEntity.ok()
-                .contentType(org.springframework.http.MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
-                .body(file);
+        final User newUser = authService.registerUser(user);
+        final RegisterView registerView = new RegisterView(newUser.getId(), newUser.getUserName());
+
+        HttpRex message = new HttpRex("200", registerView);
+        return ResponseEntity.ok().body(message);
+
+
     }
 
-    @DeleteMapping("file/{id}")
-    private ResponseEntity<HttpRex> deleteFile(@PathVariable Integer id)
+    @PostMapping("createUser")
+    private ResponseEntity<HttpRex> createNewUser(@Valid @RequestBody CreateUserForm body)
     {
-        userService.deleteFile(id);
-        final HttpRex rex = new HttpRex("200","File deleted");
-        return ResponseEntity.ok().body(rex);
+        try
+        {
+            User newUser = adminService.createNewUser(body);
+            RegisterView view = new RegisterView(newUser.getId(),newUser.getUserName());
+
+            HttpRex message = new HttpRex("200", view);
+            return ResponseEntity.ok().body(message);
+        }
+        catch (DataIntegrityViolationException e)
+        {
+            HttpRex message = new HttpRex("400", "User Creation Failed, Duplicate username");
+            return ResponseEntity.badRequest().body(message);
+        }
+        catch (Exception e)
+        {
+//            e.printStackTrace();
+            HttpRex message = new HttpRex("500", "User Creation Failed");
+            return ResponseEntity.internalServerError().body(message);
+        }
     }
 
+    @PutMapping("user/{id}")
+    private ResponseEntity<HttpRex> updateUser(@PathVariable Integer id,@Valid @RequestBody UpdateUserForm form)
+    {
+        User updatedUser = adminService.updateUser(id,form);
+        RegisterView view = new RegisterView(updatedUser.getId(),updatedUser.getUserName());
+        HttpRex message = new HttpRex("200", view);
+        return ResponseEntity.ok().body(message);
+    }
+
+    @DeleteMapping("user/{id}")
+    private ResponseEntity<HttpRex> deleteUser(@PathVariable Integer id)
+    {
+        adminService.deleteUser(id);
+        HttpRex message = new HttpRex("200", "User Deleted");
+        return ResponseEntity.ok().body(message);
+    }
 
 }

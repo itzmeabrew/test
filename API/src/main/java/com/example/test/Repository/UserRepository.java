@@ -11,10 +11,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User,Integer>
 {
     User findByUserName(String userName);
-    List<User> findByRoleOrderByUserNameAsc(String role);
     Optional<User> findById(Integer id);
     Boolean existsByUserName(String userName);
-
     void deleteById(Integer id);
-    User findByUserNameOrderByFilesDesc(String userName);
 }
